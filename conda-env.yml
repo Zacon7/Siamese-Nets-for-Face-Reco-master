@@ -1,0 +1,35 @@
+name: pytorch-env
+
+dependencies:
+  - python = 3.6
+  - matplotlib = 3.3.4
+  - jupyter = 1.0.0
+  - torchvision = 1.8.2 + cuda111
+
+hyperparams:
+  - CASIA:
+      - # 定义超参数: 学习率大小、epoch大小、训练集batchsize大小、损失函数margin等
+        lr = 2e-4
+        train_number_epochs = 50
+        train_batch_size = 64
+        contrastive_loss_margin = 12.
+        triplet_loss_margin = 20.
+        num_output = 10
+  - ATT:
+      - # 定义超参数: 学习率大小、epoch大小、训练集batchsize大小、损失函数margin等
+        lr = 2e-4
+        train_number_epochs = 50
+        train_batch_size = 64
+        contrastive_loss_margin = 12.
+        triplet_loss_margin = 20.
+        num_output = 5
+
+
+test threshold:
+    # 定义测试集大小和阈值超参数
+    if data_sets == __ATT:
+      threshold_Contra = 0.85
+      threshold_Triplet = 85.
+    elif data_sets == __CASIA:
+      threshold_Contra = 0.24
+      threshold_Triplet = 1.4
