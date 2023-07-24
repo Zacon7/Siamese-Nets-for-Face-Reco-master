@@ -1,6 +1,5 @@
 import math
 
-import matplotlib.pyplot as plt
 import torchvision
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
@@ -40,7 +39,7 @@ class Config():
     # 若损失函数为TripletLoss，则定义数据采集方式{batch_all, batch_hard}，默认为batch_hard
     batch_strategy = batch_all_triplet_loss
     # 定义训练集路径
-    training_dir = os.path.join("faces", data_sets, "train")
+    training_dir = os.path.join("datasets", data_sets, "train")
     # 定义模型参数保存路径及名称
     params_dir = os.path.join("params", data_sets, model + __params_contra)
 
@@ -137,7 +136,7 @@ class PairDataset(Dataset):
         return len(self.imageFolderDataset.imgs)
 
 
-class TripletDataset(Dataset):
+class SingleDataset(Dataset):
     def __init__(self, imageFolderDataset, transform=None, should_invert=True):
         self.data_set = imageFolderDataset.imgs
         self.transform = transform
@@ -233,8 +232,8 @@ def train_contrastive(model):
                                   num_workers=0,
                                   batch_size=Config.train_batch_size)
     pair_dataset = PairDataset(imageFolderDataset=folder_dataset,
-                                  transform=transforms.Compose([transforms.Resize((100, 100)),
-                                                                transforms.ToTensor()]), should_invert=False)
+                               transform=transforms.Compose([transforms.Resize((100, 100)),
+                                                             transforms.ToTensor()]), should_invert=False)
     eva_dataloader = DataLoader(pair_dataset, shuffle=True, num_workers=0, batch_size=1)
     if model == "[LeNet]":
         net = LeNet().cuda()
@@ -279,16 +278,16 @@ def train_contrastive(model):
 
 def train_triplet(model):
     folder_dataset = dset.ImageFolder(root=Config.training_dir)
-    siamese_dataset = TripletDataset(imageFolderDataset=folder_dataset,
-                                     transform=transforms.Compose([transforms.Resize((100, 100)),
+    siamese_dataset = SingleDataset(imageFolderDataset=folder_dataset,
+                                    transform=transforms.Compose([transforms.Resize((100, 100)),
                                                                    transforms.ToTensor()]), should_invert=False)
     train_dataloader = DataLoader(siamese_dataset,
                                   shuffle=True,
                                   num_workers=0,
                                   batch_size=Config.train_batch_size)
     pair_dataset = PairDataset(imageFolderDataset=folder_dataset,
-                                  transform=transforms.Compose([transforms.Resize((100, 100)),
-                                                                transforms.ToTensor()]), should_invert=False)
+                               transform=transforms.Compose([transforms.Resize((100, 100)),
+                                                             transforms.ToTensor()]), should_invert=False)
     eva_dataloader = DataLoader(pair_dataset, shuffle=True, num_workers=0, batch_size=1)
     if model == "[LeNet]":
         net = LeNet().cuda()
